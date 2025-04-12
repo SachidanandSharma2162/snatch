@@ -16,7 +16,9 @@ router.get('/checkout',isLoggedIn,async (req,res)=>{
 });
 router.post('/placeorder',isLoggedIn,async (req,res)=>{
   try {
-    const user = await usermodel.findOne({email:req.user.email}).populate('cart.product');
+    const user = await usermodel.findOne({email:req.user.email}).populate([
+      { path: "orders.product" },
+    ]);
     if (!user || user.cart.length === 0){
       req.flash("error","Your Cart is empty");
        return res.redirect('/cart');
@@ -30,7 +32,7 @@ router.post('/placeorder',isLoggedIn,async (req,res)=>{
       });
 
       // Find owner(s) of this product and update their order list
-      const owners = await ownermodel.find({ products: item.product._id });
+      const owners = await ownermodel.find();
       for (const owner of owners) {
         owner.orders.push({
           product: item.product._id,

@@ -1,0 +1,65 @@
+<%- include('./partials/header') %>
+
+<div class="max-w-6xl mx-auto px-6 py-12">
+  <h2 class="text-4xl font-bold mb-10 text-center text-gray-800">👤 User Details</h2>
+
+  <!-- User Info -->
+  <div class="bg-white rounded-2xl shadow-md p-6 mb-10">
+    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Basic Info</h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
+      <div>
+        <p class="font-medium">Full Name</p>
+        <p class="text-lg"><%= user.fullname %></p>
+      </div>
+      <div>
+        <p class="font-medium">Email</p>
+        <p class="text-lg"><%= user.email %></p>
+      </div>
+      <div>
+        <p class="font-medium">Contact</p>
+        <p class="text-lg"><%= user.contact %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Address -->
+  <div class="bg-white rounded-2xl shadow-md p-6 mb-10">
+    <h3 class="text-2xl font-semibold text-gray-800 mb-4">🏠 Address</h3>
+    <div class="text-gray-700 space-y-2 text-lg">
+      <p><span class="font-medium">House No:</span> <%= user.address.housenumber %></p>
+      <p><span class="font-medium">Area:</span> <%= user.address.area %></p>
+      <p><span class="font-medium">Nearby:</span> <%= user.address.nearyby %></p>
+      <p><span class="font-medium">State:</span> <%= user.address.state %></p>
+      <p><span class="font-medium">Country:</span> <%= user.address.country %></p>
+      <p><span class="font-medium">Pincode:</span> <%= user.address.pincode %></p>
+    </div>
+  </div>
+
+  <!-- Orders -->
+  <div class="bg-white rounded-2xl shadow-md p-6">
+    <h3 class="text-2xl font-semibold text-gray-800 mb-4">🛒 Orders</h3>
+    <% if (user.orders.length === 0) { %>
+      <p class="text-gray-600 text-lg">No orders yet.</p>
+    <% } else { %>
+      <div class="space-y-4">
+        <% user.orders.forEach(function(order) { %>
+          <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl shadow-sm">
+            <% if (order.product && order.product.image) { %>
+              <img
+                class="w-20 h-20 object-cover rounded-lg"
+                src="data:<%= order.product.image.contentType %>;base64,<%= order.product.image.data.toString('base64') %>"
+                alt="<%= order.product.name %>"
+              />
+            <% } %>
+            <div class="flex-1">
+              <p class="text-lg font-medium text-gray-800"><%= order.product?.name || 'Product Deleted' %></p>
+              <p class="text-gray-600">Quantity: <%= order.count %></p>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('./partials/footer') %>

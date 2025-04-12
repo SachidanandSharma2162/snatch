@@ -1,23 +1,34 @@
 const express = require('express');
+const app=express();
 const router =express.Router();
 const ownermodel=require('../models/ownermodel');
 const { logoutUser } = require('../controllers/authController');
 const productmodel = require('../models/productmodel');
 const usermodel = require('../models/usermodel');
+const bcrypt=require("bcrypt");
+const jwt=require("jsonwebtoken");
+const { generateToken } = require('../utils/generateToken');
 if(process.env.NODE_ENV === 'development'){
     router.post('/create',async(req,res)=>{
+    let {fullname, email,password}=req.body;
     let owner=await ownermodel.find()
     if(owner.length>0){
       res.status(400).send('Owner already exists for this product.');
     }
     else{
-      let {fullname, email,password}=req.body;
-      let createdOwner= await ownermodel.create({
-        fullname,
-        email,
-        password
-      });
-      res.send(createdOwner);
+      bcrypt.genSalt(12, function(err, salt) {
+        bcrypt.hash(password, salt, async function(err, hash) {
+          let createdOwner= await ownermodel.create({
+            fullname,
+            email,
+            password:hash
+          });
+          let token=generateToken(createdOwner);
+          res.cookie("token",token);
+          res.redirect('/');
+          res.send(createdOwner);
+        });
+    });
     }
   })
 }
@@ -32,15 +43,29 @@ router.post('/admin/owners/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const owner = await ownermodel.findOne({ email:email });
-
-        if (!owner || owner.password !== password) {
+        const owner = await ownermodel.findOne({ email:email }).populate([
+          { path: "orders.product" },
+          { path: "orders.user" }
+        ]);
+        console.log(owner);
+        
+        if (!owner) {
            req.flash("error",'Invalid email or password')
-            return res.redirect('/owners/admin/owners/login');
+            return res.redirect('/owners/admin/login');
         }
-        // Redirect to dashboard
-        req.flash('success',"Login")
-        res.redirect('/owners/admin');
+        else{
+          bcrypt.compare(password,owner.password,(err,result)=>{
+            if(result){
+                let token=generateToken(owner)
+                res.cookie('token',token);
+                res.redirect('/owners/admin');
+                }
+            else{
+              req.flash("error", "Email or Password is incorrect");
+              return res.redirect("/owners/admin/login");
+                }
+        })
+        }
     } catch (err) {
         console.error(err);
         req.flash("error",'Something went wrong')
@@ -69,5 +94,12 @@ router.get('/admin',async (req,res)=>{
   }
 })
 
-
+router.get('/users/:id',async (req,res)=>{
+  try {
+    let user=await usermodel.findOne({_id:req.params.id});
+    res.render("userprofile",{user});
+  } catch (error) {
+    req.flash("error",err.message)
+  }
+})
 module.exports=router;
