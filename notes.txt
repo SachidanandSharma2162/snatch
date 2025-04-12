@@ -16,3 +16,36 @@ discount number
 bgcolor String
 panelcolor String
 textcolor String
+
+setup Debugger
+npm i debug
+yaha per debugger set up krne ke bass jab ek environment variable set nhi kroge uss type ka tab tak message show nhi honge console pe
+
+to set up :
+=> const dbgr=require('debug')(development:mongoose);
+phir agar tumko msg dikhaana hai to:
+console pe likho: 
+=> export DEBUG=development:*
+to ye saare debug msg show karega jaha msg ka type development hoga
+
+aur show na krna ho to set kr do:
+=> export DEBUG=
+to koi msg nhi ayega
+
+config in database:
+config dekhta hai kon sa environment chal rha hai uske hisaab se values ko uthata hai basically work on the basis of valse of enviroment variable
+
+dotenv: is a zero-dependency module that loads environment variables from a .env file into process.env.
+
+
+express
+bcrypt
+jsonwebtoken
+config
+dotenv
+mongoose
+cookie-parser
+ejs
+express-session: for creating sessions Create a session middleware with the given options.
+connect-flash: for flash messages jo ki session use krte hai aur flash msg ko setup krne ke liye you need expess session
+multer: for image data

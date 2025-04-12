@@ -1,0 +1,64 @@
+<%- include('./partials/header') %>
+
+<div class="max-w-7xl mx-auto px-6 md:px-10 py-10">
+  <h2 class="text-4xl font-bold mb-8 text-center text-gray-800">🛍️ Confirm Your Order</h2>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Cart Items -->
+    <div class="lg:col-span-2 space-y-6">
+      <% let grandTotal = 0; %>
+      <% user.cart.forEach(function (item) {
+          const price = Number(item.product.price);
+          const discount = Number(item.product.discount);
+          const count = Number(item.count);
+          const total = count * (price - discount) + 20;
+          grandTotal += total;
+      %>
+        <div class="bg-white shadow-md rounded-2xl overflow-hidden flex flex-col md:flex-row gap-6 p-5">
+          <img
+            class="w-full md:w-40 h-40 object-cover rounded-lg"
+            src="data:<%= item.product.image.contentType %>;base64,<%= item.product.image.data.toString('base64') %>"
+            alt="<%= item.product.name %>"
+          />
+          <div class="flex-1">
+            <h3 class="text-2xl font-semibold text-gray-900"><%= item.product.name %></h3>
+            <p class="text-gray-700 mt-2">Quantity: <span class="font-medium"><%= count %></span></p>
+            <p class="text-gray-700">Unit Price: ₹<%= price - discount %></p>
+            <p class="text-gray-700">Shipping: ₹20</p>
+            <p class="mt-2 font-bold text-lg text-green-600">Item Total: ₹<%= total %></p>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+
+    <!-- Summary & Place Order -->
+    <div class="bg-white shadow-lg rounded-2xl p-6">
+      <h3 class="text-2xl font-bold mb-4 text-gray-800">Order Summary</h3>
+      <div class="space-y-2 text-gray-700">
+        <div class="flex justify-between border-b pb-2">
+          <span>Total Items</span>
+          <span><%= user.cart.length %></span>
+        </div>
+        <div class="flex justify-between border-b pb-2">
+          <span>Shipping</span>
+          <span>₹20 per item</span>
+        </div>
+        <div class="flex justify-between text-xl font-semibold mt-4">
+          <span>Grand Total</span>
+          <span class="text-green-700">₹<%= grandTotal %></span>
+        </div>
+      </div>
+
+      <form action="/users/placeorder" method="POST" class="mt-8">
+        <button
+          type="submit"
+          class="w-full bg-green-600 text-white py-3 rounded-xl text-lg font-semibold hover:bg-green-700 transition"
+        >
+          ✅ Place Order Now
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('./partials/footer') %>

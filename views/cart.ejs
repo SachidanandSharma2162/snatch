@@ -1,0 +1,103 @@
+<%- include('./partials/header') %>
+
+<% if(success.length > 0){ %>
+  <div class="fixed top-5 left-1/2 transform -translate-x-1/2 p-3 rounded-md bg-green-500 z-50">
+    <span class="text-white"> <%= success %> </span>
+  </div>
+<% } else if(error.length > 0){ %>
+  <div class="fixed top-5 left-1/2 transform -translate-x-1/2 p-3 rounded-md bg-red-500 z-50">
+    <span class="text-white"> <%= error %> </span>
+  </div>
+<% } %>
+
+<% user.cart.forEach(function (item) { 
+  const price = Number(item.product.price);
+  const discount = Number(item.product.discount);
+  const count = Number(item.count);
+  const total = count * (price- discount)+20;
+%>
+<div class="w-full flex flex-col md:flex-row items-start px-6 md:px-20 py-10 gap-6 md:gap-10 border-b">
+  <div class="w-full md:w-[30%] rounded-md overflow-hidden shadow-md">
+    <form action="/products/deleteitem/<%= item.product._id %>" method="get" class="p-2">
+      <button type="submit">
+        <i class="cursor-pointer ri-delete-bin-fill text-2xl text-red-600"></i>
+      </button>
+    </form>
+    <div class="w-full h-80 bg-gray-100 flex items-center justify-center">
+      <img
+        class="h-full w-full object-cover"
+        src="data:<%= item.product.image.contentType %>;base64,<%= item.product.image.data.toString('base64') %>"
+        alt="<%= item.product.name %>"
+      />
+    </div>
+    <div class="w-full flex justify-between px-5 py-4 bg-white">
+      <h3 class="text-xl font-semibold"><%= item.product.name %></h3>
+      <div class="flex items-center gap-2">
+        <!-- Increment -->
+        <a href="/products/cart/update/<%= item.product._id %>/increment">
+          <i class="w-7 h-7 bg-gray-200 flex rounded-full items-center justify-center ri-add-line hover:bg-green-300 transition"></i>
+        </a>
+
+        <!-- Quantity -->
+        <div class="px-3 py-1 rounded-md bg-gray-100 text-black"><%= item.count %></div>
+
+        <!-- Decrement -->
+        <a href="/products/cart/update/<%= item.product._id %>/decrement">
+          <i class="w-7 h-7 bg-gray-200 flex rounded-full items-center justify-center ri-subtract-line hover:bg-red-300 transition"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="w-full md:w-[70%]">
+    <h3 class="text-xl font-semibold mb-4">Price Breakdown</h3>
+    <div class="px-5">
+      <div class="flex justify-between mb-2">
+        <span>Total MRP</span>
+        <span>₹ <%= price %> x <%= count %></span>
+      </div>
+      <div class="flex justify-between mb-2">
+        <span>Discount</span>
+        <span>- ₹ <%= discount %> x <%= count %></span>
+      </div>
+      <div class="flex justify-between mb-2">
+        <span>Platform Fee</span>
+        <span>₹ 20</span>
+      </div>
+      <div class="flex justify-between mb-2">
+        <span>Shipping</span>
+        <span>FREE</span>
+      </div>
+      <hr class="my-4 border-black">
+      <div class="flex justify-between font-semibold text-green-700">
+        <span>Total</span>
+        <span>₹ <%= total %></span>
+      </div>
+    </div>
+  </div>
+</div>
+<% }) %>
+
+<div class="w-full px-6 md:px-20 py-10 flex justify-end bg-gray-100">
+  <div class="bg-white shadow-lg p-6 rounded-xl w-full md:w-1/2 lg:w-1/3">
+    <h2 class="text-2xl font-semibold mb-4">Cart Summary</h2>
+    <div class="flex justify-between mb-2">
+      <span>Total Items</span>
+      <span><%= user.cart.length %></span>
+    </div>
+    <div class="flex justify-between mb-2">
+      <span>Total Payable Amount</span>
+      <span class="text-green-600 font-bold">₹ <%= bill %></span>
+    </div>
+    <form action="/users/checkout" method="get" class="mt-6">
+      <button
+        type="submit"
+        class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-green-700 transition duration-300"
+      >
+        Proceed to Checkout
+      </button>
+    </form>
+  </div>
+</div>
+
+<%- include('./partials/footer') %>

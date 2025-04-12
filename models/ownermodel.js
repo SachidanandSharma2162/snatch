@@ -8,13 +8,27 @@ const ownerSchema = mongoose.Schema({
     },
     email:String,
     password:String,
-    products:{
-        type: Array,
-        ref: []
-    },
+    products:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"product"
+    }],
     contact:Number,
     picture:String,
     gstin:String,
+    orders:[{
+        product:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref:"product"
+        },
+        user:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref:"user"
+        },
+        count:{
+            type:Number,
+            default:0
+        }
+    }]
 });
 
 module.exports=mongoose.model("owner",ownerSchema)

@@ -1,0 +1,78 @@
+<%- include('./partials/header') %>
+<% if(success.length > 0){ %>
+  <div class="fixed top-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg bg-green-500 shadow-lg text-white animate-bounce z-50">
+    ✅ <%= success %>
+  </div>
+<% } else if(error.length > 0){ %>
+  <div class="fixed top-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg bg-red-500 shadow-lg text-white animate-bounce z-50">
+    ❌ <%= error %>
+  </div>
+<% } %>
+<div class="max-w-4xl mx-auto mt-10 bg-white p-6 rounded-lg shadow-md">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Product Image -->
+    <div>
+      <img src="data:<%= product.image.contentType %>;base64,<%= product.image.data.toString('base64') %>" alt="Product Image" class="rounded w-full h-auto">
+    </div>
+
+    <!-- Product Details -->
+    <div>
+      <h2 class="text-3xl font-bold mb-2"><%= product.name %></h2>
+      <p class="text-xl text-gray-600 mb-2">₹<%= product.price %></p>
+      <p class="mb-4">Discount: <%= product.discount %></p>
+
+      
+
+      <!-- Add to Cart -->
+      <div class="mt-6">
+        <a class="w-10 h-10 flex items-center justify-center rounded-full bg-black text-white hover:bg-gray-800 transition"
+           href="/addtocart/<%= product._id %>">
+          <i class="ri-add-line text-xl"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews Section -->
+  <div class="mt-10">
+    <h3 class="text-2xl font-semibold mb-4">Customer Reviews</h3>
+
+    <!-- Previous Reviews -->
+    <% if (product.review && product.review.length > 0) { %>
+      <div class="space-y-4">
+        <% product.review.forEach(review => { %>
+          <div class="bg-gray-100 p-4 rounded">
+            <div class="flex items-center justify-between">
+              <p class="font-semibold text-gray-800"><%= review.user.fullname %>:</p>
+        
+              <% if (user && review.user._id.toString() === user._id.toString()) { %>
+                <form action="/products/deletereview/<%= product._id %>/<%= review._id %>" method="get">
+                  <button type="submit" title="Delete your review">
+                    <i class="ri-chat-delete-fill cursor-pointer text-red-500"></i>
+                  </button>
+                </form>
+              <% } %>
+            </div>
+            <p class="text-gray-700"><%= review.text %></p>
+          </div>
+        <% }) %>
+        
+      </div>
+    <% } else { %>
+      <p class="text-gray-500">No reviews yet. Be the first to review this product.</p>
+    <% } %>
+
+    <!-- Add Review Form -->
+    <div class="mt-6">
+      <form action="/products/<%= product._id %>/review" method="POST" class="space-y-4">
+        <div>
+          <label class="block text-gray-700 font-medium">Leave a Review</label>
+          <textarea name="review" required rows="3" class="w-full border resize-none px-3 py-2 rounded focus:outline-none focus:ring focus:border-blue-300"></textarea>
+        </div>
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Submit Review</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('./partials/footer') %>

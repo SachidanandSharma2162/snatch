@@ -1,0 +1,74 @@
+<%- include('./partials/header') %>
+
+<div class="max-w-2xl mx-auto mt-10 bg-white p-6 rounded shadow-md">
+
+  <div class="flex items-center gap-6">
+    <% if (user && user.picture && user.picture.data) { %>
+      <img 
+        src="data:<%= user.picture.contentType %>;base64,<%= user.picture.data.toString('base64') %>" 
+        alt="Profile Picture" 
+        class="w-40 h-40 object-cover rounded-full border-4 border-blue-500"
+      />
+    <% } else { %>
+      <div class="w-32 h-32 rounded-full bg-gray-300 flex items-center justify-center text-gray-500 text-sm">
+        No Image
+      </div>
+    <% } %>
+
+    <div>
+      <h2 class="text-2xl font-semibold mb-1"><%= user.fullname %></h2>
+      <p class="text-gray-600"><strong>Email:</strong> <%= user.email %></p>
+      <p class="text-gray-600"><strong>Contact:</strong> <%= user.contact || "N/A" %></p>
+      <% if (user.address && user.address.housenumber) { %>
+        <p class="text-gray-700">
+          <strong>Address:</strong> 
+          <%= user.address.housenumber %>, <%= user.address.area %>, near <%= user.address.nearyby %>, 
+          <%= user.address.state %>, <%= user.address.country %> - <%= user.address.pincode %>
+        </p>
+      <% } else { %>
+        <p class="text-gray-500 mt-4 italic">Address not added yet.</p>
+      <% } %>
+      
+
+      <div class="flex gap-4 mt-4">
+        <a 
+          href="/editprofile" 
+          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+        >
+          Edit Profile
+        </a>
+        <button 
+          id="toggleReviews" 
+          class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+        >
+          My Reviews
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="reviewSection" class="max-w-2xl mx-auto mt-6 hidden">
+  <h3 class="text-xl font-semibold mb-3">Your Reviews</h3>
+
+  <% if (userReviews.length === 0) { %>
+    <p class="text-gray-500">You haven't posted any reviews yet.</p>
+  <% } else { %>
+    <% userReviews.forEach(({ product, text }) => { %>
+      <div class="bg-gray-100 p-4 rounded mb-4">
+        <form action="/products/detail/<%= product._id%>" method="get">
+          <h3 class="font-bold"><%= product.name %> 
+            <button class="cursor-pointer" type="submit">
+              <i class="ri-arrow-right-line"></i>
+            </button>
+          </h3>
+        </form>
+        <p class="mt-1"><%= text %></p>
+      </div>
+    <% }) %>
+  <% } %>
+</div>
+
+<script src="/javascripts/account.js"></script>
+
+<%- include('./partials/footer') %>
