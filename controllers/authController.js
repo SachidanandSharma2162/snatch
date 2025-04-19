@@ -47,6 +47,7 @@ module.exports.loginUser=async function(req,res){
                 if(result){
                     let token=generateToken(user)
                     res.cookie('token',token);
+                    req.session.user=user;
                     // res.status(200).send("Login Successful!");
                     res.redirect('/shop');
                     }
@@ -63,5 +64,6 @@ module.exports.loginUser=async function(req,res){
 
 module.exports.logoutUser=function(req,res){
     res.cookie('token',"");
+    req.session.destroy();
     res.redirect('/');
 }
